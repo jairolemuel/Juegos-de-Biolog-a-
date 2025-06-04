@@ -15,22 +15,6 @@
       position: relative;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: url('https://i.ibb.co/zxDxZ9p/dna-loop-green.gif') center center / cover no-repeat;
-      opacity: 0.07;
-      z-index: -1;
-      animation: slowZoom 60s infinite linear;
-    }
-
-    @keyframes slowZoom {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
-    }
-
     header {
       background-color: #00b894;
       color: white;
@@ -38,6 +22,8 @@
       text-align: center;
       font-size: 2.2em;
       box-shadow: 0 4px 20px rgba(0, 255, 150, 0.5);
+      z-index: 2;
+      position: relative;
     }
 
     .game-container {
@@ -50,7 +36,7 @@
       backdrop-filter: blur(10px);
       transition: all 0.4s ease;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     .cell-image {
@@ -58,12 +44,6 @@
       border-radius: 10px;
       border: 3px solid #00ffae;
       box-shadow: 0 0 15px #00ffae88;
-      transition: transform 0.3s ease;
-    }
-
-    .cell-image:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px #00ffae;
     }
 
     .options {
@@ -127,6 +107,8 @@
       text-align: center;
       margin: 60px auto 30px;
       color: #95f5d6;
+      position: relative;
+      z-index: 2;
     }
 
     ::selection {
@@ -134,19 +116,30 @@
       color: black;
     }
 
+    /* Animación de bacterias */
     .bacteria {
       position: absolute;
       width: 40px;
       height: 40px;
-      background: url('https://i.ibb.co/qgGRcc7/bacteria.png') no-repeat center center / contain;
-      opacity: 0.4;
-      animation: float infinite linear;
-      z-index: 0;
+      background-image: url('https://i.ibb.co/0j1Y1Yv/bacteria.png');
+      background-size: cover;
+      opacity: 0.3;
+      animation: moveBacteria linear infinite;
+      z-index: 1;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0px) rotate(0deg); }
-      100% { transform: translateY(-120vh) rotate(360deg); }
+    @keyframes moveBacteria {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(100vh) translateX(100vw) rotate(360deg);
+        opacity: 0.3;
+      }
     }
   </style>
 </head>
@@ -167,8 +160,8 @@
   </footer>
 
   <!-- Sonidos -->
-  <audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f71dfbfd31.mp3?filename=correct-2-46134.mp3"></audio>
-  <audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a0c23e736f.mp3?filename=error-126627.mp3"></audio>
+  <audio id="correctSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+  <audio id="incorrectSound" src="https://www.soundjay.com/button/sounds/button-10.mp3" preload="auto"></audio>
 
   <script>
     const questions = [
@@ -189,24 +182,14 @@
       }
     ];
 
-    // Aleatorizar preguntas
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-    shuffle(questions);
-
     let currentQuestion = 0;
-    let score = 0;
 
     const imgEl = document.getElementById("cellImage");
     const optionsContainer = document.getElementById("optionsContainer");
     const feedbackEl = document.getElementById("feedback");
     const nextBtn = document.getElementById("nextBtn");
     const correctSound = document.getElementById("correctSound");
-    const wrongSound = document.getElementById("wrongSound");
+    const incorrectSound = document.getElementById("incorrectSound");
 
     function loadQuestion() {
       feedbackEl.textContent = "";
@@ -221,17 +204,17 @@
         btn.textContent = opt;
         btn.onclick = () => {
           const isCorrect = opt === q.correct;
-          if (isCorrect) {
-            score++;
-            correctSound.play();
-          } else {
-            wrongSound.play();
-          }
-
           feedbackEl.textContent = isCorrect ? "✅ ¡Correcto!" : `❌ Incorrecto. Era: ${q.correct}`;
           feedbackEl.style.color = isCorrect ? "#00ffae" : "#ff8a80";
+
           btn.classList.add(isCorrect ? "correct" : "incorrect");
           nextBtn.style.display = "inline-block";
+
+          if (isCorrect) {
+            correctSound.play();
+          } else {
+            incorrectSound.play();
+          }
 
           Array.from(document.getElementsByClassName("option-btn")).forEach(b => b.disabled = true);
         };
@@ -240,29 +223,29 @@
     }
 
     nextBtn.onclick = () => {
-      currentQuestion++;
-      if (currentQuestion < questions.length) {
-        loadQuestion();
-      } else {
-        feedbackEl.innerHTML = `🎉 Juego terminado.<br/>🔬 Tu puntaje: ${score}/${questions.length}`;
-        imgEl.style.display = "none";
-        optionsContainer.innerHTML = "";
-        nextBtn.style.display = "none";
-      }
+      currentQuestion = (currentQuestion + 1) % questions.length;
+      loadQuestion();
     };
 
     loadQuestion();
 
-    // Animación de bacterias flotantes
-    for (let i = 0; i < 20; i++) {
-      const bac = document.createElement("div");
-      bac.classList.add("bacteria");
-      bac.style.left = Math.random() * 100 + "vw";
-      bac.style.top = Math.random() * 100 + "vh";
-      bac.style.animationDuration = (20 + Math.random() * 30) + "s";
-      bac.style.opacity = 0.2 + Math.random() * 0.4;
-      document.body.appendChild(bac);
+    // Generar bacterias animadas
+    function createBacteria() {
+      const bacteria = document.createElement('div');
+      bacteria.classList.add('bacteria');
+      bacteria.style.top = Math.random() * window.innerHeight + 'px';
+      bacteria.style.left = Math.random() * window.innerWidth + 'px';
+      bacteria.style.animationDuration = (10 + Math.random() * 20) + 's';
+      document.body.appendChild(bacteria);
+
+      // Eliminar la bacteria después de la animación
+      setTimeout(() => {
+        bacteria.remove();
+      }, 30000);
     }
+
+    // Crear bacterias cada cierto tiempo
+    setInterval(createBacteria, 1000);
   </script>
 </body>
 </html>
