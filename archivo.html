@@ -1,251 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Adiviná la Célula | Biología Interactiva</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Te amo Gabriel 🧡</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-      color: #caffd4;
       overflow: hidden;
-      position: relative;
+      background-color: #1a1a1a;
+      font-family: 'Arial', sans-serif;
     }
-
-    header {
-      background-color: #00b894;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 2.2em;
-      box-shadow: 0 4px 20px rgba(0, 255, 150, 0.5);
-      z-index: 2;
-      position: relative;
-    }
-
-    .game-container {
-      max-width: 800px;
-      margin: 60px auto;
-      background: rgba(255,255,255,0.05);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0,255,150,0.2);
-      backdrop-filter: blur(10px);
-      transition: all 0.4s ease;
-      position: relative;
-      z-index: 2;
-    }
-
-    .cell-image {
-      width: 100%;
-      border-radius: 10px;
-      border: 3px solid #00ffae;
-      box-shadow: 0 0 15px #00ffae88;
-    }
-
-    .options {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .option-btn {
-      padding: 14px;
-      font-size: 1.2em;
-      background-color: #003d33;
-      color: #caffd4;
-      border: 2px solid #00ffae;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .option-btn:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 12px #00ffae;
-    }
-
-    .option-btn.correct {
-      animation: shine 0.6s ease forwards;
-    }
-
-    .option-btn.incorrect {
-      background-color: #7f1d1d;
-      color: #ffecec;
-    }
-
-    @keyframes shine {
-      from { box-shadow: 0 0 10px #00ffae; }
-      to { box-shadow: 0 0 25px #00ffae; background-color: #004d40; }
-    }
-
-    .feedback {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 1.3em;
-      text-align: center;
-    }
-
-    .next-btn {
-      margin-top: 20px;
-      display: none;
-      padding: 12px 25px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00ffae;
-    }
-
-    footer {
-      text-align: center;
-      margin: 60px auto 30px;
-      color: #95f5d6;
-      position: relative;
-      z-index: 2;
-    }
-
-    ::selection {
-      background: #00ffae;
-      color: black;
-    }
-
-    /* Animación de bacterias */
-    .bacteria {
+    #loveMessage {
       position: absolute;
-      width: 40px;
-      height: 40px;
-      background-image: url('https://i.ibb.co/0j1Y1Yv/bacteria.png');
-      background-size: cover;
-      opacity: 0.3;
-      animation: moveBacteria linear infinite;
-      z-index: 1;
-    }
-
-    @keyframes moveBacteria {
-      0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 0.3;
-      }
-      50% {
-        opacity: 0.6;
-      }
-      100% {
-        transform: translateY(100vh) translateX(100vw) rotate(360deg);
-        opacity: 0.3;
-      }
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: orange;
+      font-size: 3rem;
+      text-shadow: 0 0 10px #ff8800;
+      z-index: 2;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <header>
-    🧬 Adiviná la Célula
-  </header>
 
-  <div class="game-container">
-    <img id="cellImage" class="cell-image" src="" alt="Imagen de célula" />
-    <div class="options" id="optionsContainer"></div>
-    <div class="feedback" id="feedback"></div>
-    <button class="next-btn" id="nextBtn">Siguiente célula</button>
-  </div>
+<div id="loveMessage">💛🧡 Te amo, Gabriel 🧡💛</div>
 
-  <footer>
-    Hecho por Lemuel para la clase de Biología 🧪
-  </footer>
+<script src="https://pixijs.download/release/pixi.min.js"></script>
+<script>
+  const app = new PIXI.Application({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    transparent: true
+  });
+  document.body.appendChild(app.view);
 
-  <!-- Sonidos -->
-  <audio id="correctSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
-  <audio id="incorrectSound" src="https://www.soundjay.com/button/sounds/button-10.mp3" preload="auto"></audio>
+  const heartTexture = new PIXI.Text('🧡', {
+    fontSize: 40
+  }).texture;
 
-  <script>
-    const questions = [
-      {
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Biological_cell_structure-es.svg/600px-Biological_cell_structure-es.svg.png",
-        correct: "Animal",
-        options: ["Animal", "Vegetal", "Prokaryota"]
-      },
-      {
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/C%C3%A9lula_vegetal_tipo_es.svg/600px-C%C3%A9lula_vegetal_tipo_es.svg.png",
-        correct: "Vegetal",
-        options: ["Vegetal", "Animal", "Virus"]
-      },
-      {
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Esquema_bacteria.svg/600px-Esquema_bacteria.svg.png",
-        correct: "Prokaryota",
-        options: ["Prokaryota", "Arquea", "Animal"]
+  const hearts = [];
+
+  function createHeart() {
+    const heart = new PIXI.Sprite(heartTexture);
+    heart.x = Math.random() * app.screen.width;
+    heart.y = -50;
+    heart.scale.set(1 + Math.random() * 0.5);
+    heart.speed = 1 + Math.random() * 2;
+    heart.interactive = true;
+    heart.cursor = 'pointer';
+    heart.on('pointerdown', () => explodeHeart(heart));
+    app.stage.addChild(heart);
+    hearts.push(heart);
+  }
+
+  function explodeHeart(heart) {
+    app.stage.removeChild(heart);
+    for (let i = 0; i < 6; i++) {
+      const piece = new PIXI.Sprite(heartTexture);
+      piece.x = heart.x;
+      piece.y = heart.y;
+      piece.scale.set(0.3 + Math.random() * 0.2);
+      piece.vx = (Math.random() - 0.5) * 10;
+      piece.vy = (Math.random() - 0.5) * 10;
+      piece.alpha = 1;
+      app.stage.addChild(piece);
+      fallingPieces.push(piece);
+    }
+  }
+
+  const fallingPieces = [];
+
+  app.ticker.add(() => {
+    if (Math.random() < 0.2) createHeart();
+
+    for (let heart of hearts) {
+      heart.y += heart.speed;
+      if (heart.y > app.screen.height + 50) {
+        app.stage.removeChild(heart);
+        hearts.splice(hearts.indexOf(heart), 1);
       }
-    ];
-
-    let currentQuestion = 0;
-
-    const imgEl = document.getElementById("cellImage");
-    const optionsContainer = document.getElementById("optionsContainer");
-    const feedbackEl = document.getElementById("feedback");
-    const nextBtn = document.getElementById("nextBtn");
-    const correctSound = document.getElementById("correctSound");
-    const incorrectSound = document.getElementById("incorrectSound");
-
-    function loadQuestion() {
-      feedbackEl.textContent = "";
-      nextBtn.style.display = "none";
-      const q = questions[currentQuestion];
-      imgEl.src = q.img;
-
-      optionsContainer.innerHTML = "";
-      q.options.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.classList.add("option-btn");
-        btn.textContent = opt;
-        btn.onclick = () => {
-          const isCorrect = opt === q.correct;
-          feedbackEl.textContent = isCorrect ? "✅ ¡Correcto!" : `❌ Incorrecto. Era: ${q.correct}`;
-          feedbackEl.style.color = isCorrect ? "#00ffae" : "#ff8a80";
-
-          btn.classList.add(isCorrect ? "correct" : "incorrect");
-          nextBtn.style.display = "inline-block";
-
-          if (isCorrect) {
-            correctSound.play();
-          } else {
-            incorrectSound.play();
-          }
-
-          Array.from(document.getElementsByClassName("option-btn")).forEach(b => b.disabled = true);
-        };
-        optionsContainer.appendChild(btn);
-      });
     }
 
-    nextBtn.onclick = () => {
-      currentQuestion = (currentQuestion + 1) % questions.length;
-      loadQuestion();
-    };
-
-    loadQuestion();
-
-    // Generar bacterias animadas
-    function createBacteria() {
-      const bacteria = document.createElement('div');
-      bacteria.classList.add('bacteria');
-      bacteria.style.top = Math.random() * window.innerHeight + 'px';
-      bacteria.style.left = Math.random() * window.innerWidth + 'px';
-      bacteria.style.animationDuration = (10 + Math.random() * 20) + 's';
-      document.body.appendChild(bacteria);
-
-      // Eliminar la bacteria después de la animación
-      setTimeout(() => {
-        bacteria.remove();
-      }, 30000);
+    for (let piece of fallingPieces) {
+      piece.x += piece.vx;
+      piece.y += piece.vy;
+      piece.alpha -= 0.02;
+      if (piece.alpha <= 0) {
+        app.stage.removeChild(piece);
+        fallingPieces.splice(fallingPieces.indexOf(piece), 1);
+      }
     }
+  });
 
-    // Crear bacterias cada cierto tiempo
-    setInterval(createBacteria, 1000);
-  </script>
+  // Ajustar tamaño al cambiar la ventana
+  window.addEventListener('resize', () => {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
 </body>
 </html>
