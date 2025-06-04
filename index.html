@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adiviná la Célula | Biología Interactiva</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #d1f7e0, #cce3f5);
+      color: #333;
+      overflow-x: hidden;
+      background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+    }
+
+    header {
+      background-color: #00695c;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 2em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .game-container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    .cell-image {
+      width: 100%;
+      border-radius: 10px;
+      border: 3px solid #80cbc4;
+    }
+
+    .options {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      padding: 12px;
+      font-size: 1.1em;
+      background-color: #e0f2f1;
+      border: 2px solid #009688;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .option-btn:hover {
+      background-color: #b2dfdb;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      display: none;
+      padding: 10px 20px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      margin: 50px auto 20px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    🧬 Adiviná la Célula
+  </header>
+
+  <div class="game-container">
+    <img id="cellImage" class="cell-image" src="" alt="Imagen de célula" />
+    <div class="options" id="optionsContainer"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn">Siguiente célula</button>
+  </div>
+
+  <footer>
+    Hecho por Lemuel para la clase de Biología 🧪
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Biological_cell_structure-es.svg/600px-Biological_cell_structure-es.svg.png",
+        correct: "Animal",
+        options: ["Animal", "Vegetal", "Bacteriana"]
+      },
+      {
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/C%C3%A9lula_vegetal_tipo_es.svg/600px-C%C3%A9lula_vegetal_tipo_es.svg.png",
+        correct: "Vegetal",
+        options: ["Vegetal", "Animal", "Bacteriana"]
+      },
+      {
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Esquema_bacteria.svg/600px-Esquema_bacteria.svg.png",
+        correct: "Bacteriana",
+        options: ["Animal", "Bacteriana", "Vegetal"]
+      }
+    ];
+
+    let currentQuestion = 0;
+
+    const imgEl = document.getElementById("cellImage");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackEl = document.getElementById("feedback");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function loadQuestion() {
+      feedbackEl.textContent = "";
+      nextBtn.style.display = "none";
+      const q = questions[currentQuestion];
+      imgEl.src = q.img;
+
+      optionsContainer.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.classList.add("option-btn");
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (opt === q.correct) {
+            feedbackEl.textContent = "✅ ¡Correcto!";
+            feedbackEl.style.color = "green";
+          } else {
+            feedbackEl.textContent = `❌ Incorrecto. Era: ${q.correct}`;
+            feedbackEl.style.color = "red";
+          }
+          nextBtn.style.display = "inline-block";
+        };
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    nextBtn.onclick = () => {
+      currentQuestion = (currentQuestion + 1) % questions.length;
+      loadQuestion();
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>
